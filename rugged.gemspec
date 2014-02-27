@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.authors               = [ "Scott Chacon", "Vicent Marti" ]
   s.license               = "MIT"
   s.files                 = `git ls-files`.split($\)
-  s.executables           = s.files.grep(%r{^bin/}).map{|f| File.basename(f)}
+  s.executables           = s.files.grep(%r{^examples/}).map{|f| File.basename(f)}
   s.test_files            = s.files.grep(%r{^(test|spec|features)/})
   s.extensions            = s.files.grep(%r{^ext/.*.rb$})
   `git submodule --quiet update --init`
