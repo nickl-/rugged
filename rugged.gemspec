@@ -10,13 +10,17 @@ Gem::Specification.new do |s|
   s.email                 = "schacon@gmail.com"
   s.authors               = [ "Scott Chacon", "Vicent Marti" ]
   s.license               = "MIT"
-  s.files                 = %w( README.md LICENSE )
-  s.files                 += Dir.glob("lib/**/*.rb")
-  s.files                 += Dir.glob("ext/**/*.[ch]")
-  s.files                 += Dir.glob("vendor/libgit2/cmake/**/*")
-  s.files                 += Dir.glob("vendor/libgit2/{include,src,deps}/**/*")
-  s.files                 += Dir.glob("vendor/libgit2/{CMakeLists.txt,Makefile.embed,AUTHORS,COPYING,libgit2.pc.in}")
-  s.extensions            = ['ext/rugged/extconf.rb']
+  s.files                 = `git ls-files`.split($\)
+  s.executables           = s.files.grep(%r{^bin/}).map{|f| File.basename(f)}
+  s.test_files            = s.files.grep(%r{^(test|spec|features)/})
+  s.extensions            = s.files.grep(%r{^ext/.*.rb$})
+  `git submodule --quiet update --init`
+  `git submodule --quiet foreach pwd`.split($\).each do |submodule_path|
+    Dir.chdir(submodule_path) do
+      relative_to = submodule_path[/#{File.dirname(__FILE__)}\/(.*)/,1]
+      s.files += `git ls-files|awk '!/"/{print "#{relative_to}/"$0}'`.split($\)
+    end
+  end
   s.required_ruby_version = '>= 1.9.3'
   s.description           = <<desc
 Rugged is a Ruby bindings to the libgit2 linkable C Git library. This is
